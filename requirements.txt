@@ -6,3 +6,5 @@ python-dotenv
 tzdata
 pytest
 ruff
+httpx
+google-genai
