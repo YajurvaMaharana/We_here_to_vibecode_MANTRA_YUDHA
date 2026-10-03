@@ -1,0 +1,406 @@
+﻿
+==========================================================================================
+STEP 1 ΓÇô FILES FOUND IN ./data/
+  PRESENT  conversations.json  (2,201,935 bytes)
+  PRESENT  customers.csv  (328,860 bytes)
+  PRESENT  order_items.csv  (810,573 bytes)
+  PRESENT  orders.csv  (2,134,105 bytes)
+  PRESENT  products.csv  (94,368 bytes)
+  PRESENT  reviews.csv  (451,051 bytes)
+  MISSING  support_tickets.csv
+
+Policy-related files in ./data/:
+  (none found)
+
+==========================================================================================
+STEP 2 ΓÇô CUSTOMERS.CSV
+  Rows: 1,500   Cols: 18
+  Columns & types:
+    customer_id                         type=str     nulls=0
+    first_name                          type=str     nulls=0
+    last_name                           type=str     nulls=0
+    email                               type=str     nulls=0
+    phone                               type=str     nulls=0
+    gender                              type=str     nulls=0
+    date_of_birth                       type=str     nulls=0
+    city                                type=str     nulls=0
+    state                               type=str     nulls=0
+    pincode                             type=int     nulls=0
+    address                             type=str     nulls=0
+    customer_since                      type=str     nulls=0
+    customer_segment                    type=str     nulls=0
+    account_status                      type=str     nulls=0
+    preferred_language                  type=str     nulls=0
+    total_orders                        type=int     nulls=0
+    total_spend                         type=int     nulls=0
+    loyalty_tier                        type=str     nulls=0
+  First 3 rows:
+    {'customer_id': 'CUST-00001', 'first_name': 'Ravi', 'last_name': 'Ali', 'email': 'ravi.ali@webmail.example', 'phone': '+91 80008 44305', 'gender': 'male', 'date_of_birth': '1981-04-26', 'city': 'Noida', 'state': 'Uttar Pradesh', 'pincode': '201451', 'address': 'Flat 273, Celestial Apartments, 12th Main, Industrial Estate', 'customer_since': '2019-01-21', 'customer_segment': 'regular', 'account_status': 'active', 'preferred_language': 'Hinglish', 'total_orders': '4', 'total_spend': '24778', 'loyalty_tier': 'bronze'}
+    {'customer_id': 'CUST-00002', 'first_name': 'Ekta', 'last_name': 'Dubey', 'email': 'ekta.dubey20@mailbox.example', 'phone': '+91 80005 23230', 'gender': 'female', 'date_of_birth': '1986-04-28', 'city': 'Delhi', 'state': 'Delhi', 'pincode': '110911', 'address': 'Flat 895, Mangal Darshan, Bypass Road, Phase 2', 'customer_since': '2019-04-12', 'customer_segment': 'new', 'account_status': 'active', 'preferred_language': 'English', 'total_orders': '1', 'total_spend': '13569', 'loyalty_tier': 'bronze'}
+    {'customer_id': 'CUST-00003', 'first_name': 'Megha', 'last_name': 'Ramasamy', 'email': 'megha.ramasamy@webmail.example', 'phone': '+91 70007 82042', 'gender': 'female', 'date_of_birth': '1999-02-08', 'city': 'Coimbatore', 'state': 'Tamil Nadu', 'pincode': '641830', 'address': '5/29, Jasmine Heights, College Road, Industrial Estate', 'customer_since': '2019-05-02', 'customer_segment': 'premium', 'account_status': 'active', 'preferred_language': 'Tamil', 'total_orders': '6', 'total_spend': '79414', 'loyalty_tier': 'bronze'}
+
+==========================================================================================
+STEP 2 ΓÇô ORDERS.CSV
+  Rows: 8,000   Cols: 22
+  Columns & types:
+    order_id                            type=str     nulls=0
+    customer_id                         type=str     nulls=0
+    order_date                          type=str     nulls=0
+    order_status                        type=str     nulls=0
+    payment_method                      type=str     nulls=0
+    payment_status                      type=str     nulls=0
+    subtotal                            type=int     nulls=0
+    discount                            type=int     nulls=0
+    shipping_fee                        type=int     nulls=0
+    tax                                 type=int     nulls=0
+    total_amount                        type=int     nulls=0
+    shipping_address                    type=str     nulls=0
+    city                                type=str     nulls=0
+    state                               type=str     nulls=0
+    estimated_delivery_date             type=str     nulls=0
+    actual_delivery_date                type=str     nulls=708
+    tracking_number                     type=str     nulls=509
+    courier                             type=str     nulls=509
+    delivery_status                     type=str     nulls=0
+    delivery_otp_verified               type=str     nulls=0
+    cancellation_status                 type=str     nulls=0
+    refund_status                       type=str     nulls=0
+  First 3 rows:
+    {'order_id': 'ORD-000001', 'customer_id': 'CUST-00615', 'order_date': '2026-01-01 16:35:39', 'order_status': 'delivered', 'payment_method': 'cash_on_delivery', 'payment_status': 'paid', 'subtotal': '149', 'discount': '0', 'shipping_fee': '79', 'tax': '27', 'total_amount': '255', 'shipping_address': 'Unit 90-D, Tulsi Garden, Nagar Road, West End, Nagpur, Maharashtra - 440115', 'city': 'Nagpur', 'state': 'Maharashtra', 'estimated_delivery_date': '2026-01-07', 'actual_delivery_date': '2026-01-07', 'tracking_number': 'SLN6466329037', 'courier': 'SwiftLane', 'delivery_status': 'delivered', 'delivery_otp_verified': 'false', 'cancellation_status': 'none', 'refund_status': 'none'}
+    {'order_id': 'ORD-000002', 'customer_id': 'CUST-01107', 'order_date': '2026-01-01 17:06:49', 'order_status': 'delivered', 'payment_method': 'credit_card', 'payment_status': 'paid', 'subtotal': '149', 'discount': '0', 'shipping_fee': '79', 'tax': '27', 'total_amount': '255', 'shipping_address': 'Flat 309, Celestial Apartments, Market Cross Road, Housing Board, Thiruvananthapuram, Kerala - 695907', 'city': 'Thiruvananthapuram', 'state': 'Kerala', 'estimated_delivery_date': '2026-01-05', 'actual_delivery_date': '2026-01-05', 'tracking_number': 'KVC2820540079', 'courier': 'KaveriCargo', 'delivery_status': 'delivered', 'delivery_otp_verified': 'false', 'cancellation_status': 'none', 'refund_status': 'none'}
+    {'order_id': 'ORD-000003', 'customer_id': 'CUST-00233', 'order_date': '2026-01-01 17:16:29', 'order_status': 'cancelled', 'payment_method': 'UPI', 'payment_status': 'refunded', 'subtotal': '649', 'discount': '77', 'shipping_fee': '79', 'tax': '103', 'total_amount': '754', 'shipping_address': 'House No. 348, Celestial Apartments, Market Cross Road, Phase 2, Noida, Uttar Pradesh - 201680', 'city': 'Noida', 'state': 'Uttar Pradesh', 'estimated_delivery_date': '2026-01-04', 'actual_delivery_date': '', 'tracking_number': '', 'courier': '', 'delivery_status': 'not_dispatched', 'delivery_otp_verified': 'false', 'cancellation_status': 'approved', 'refund_status': 'processed'}
+
+==========================================================================================
+STEP 2 ΓÇô ORDER_ITEMS.CSV
+  Rows: 12,444   Cols: 10
+  Columns & types:
+    order_item_id                       type=str     nulls=0
+    order_id                            type=str     nulls=0
+    product_id                          type=str     nulls=0
+    quantity                            type=int     nulls=0
+    unit_price                          type=int     nulls=0
+    discount                            type=int     nulls=0
+    final_price                         type=int     nulls=0
+    item_status                         type=str     nulls=0
+    return_status                       type=str     nulls=0
+    refund_amount                       type=int     nulls=0
+  First 3 rows:
+    {'order_item_id': 'OI-000001', 'order_id': 'ORD-000001', 'product_id': 'PROD-00017', 'quantity': '1', 'unit_price': '149', 'discount': '0', 'final_price': '149', 'item_status': 'delivered', 'return_status': 'none', 'refund_amount': '0'}
+    {'order_item_id': 'OI-000002', 'order_id': 'ORD-000002', 'product_id': 'PROD-00032', 'quantity': '1', 'unit_price': '149', 'discount': '0', 'final_price': '149', 'item_status': 'delivered', 'return_status': 'none', 'refund_amount': '0'}
+    {'order_item_id': 'OI-000003', 'order_id': 'ORD-000003', 'product_id': 'PROD-00132', 'quantity': '1', 'unit_price': '649', 'discount': '77', 'final_price': '572', 'item_status': 'cancelled', 'return_status': 'none', 'refund_amount': '675'}
+
+==========================================================================================
+STEP 2 ΓÇô PRODUCTS.CSV
+  Rows: 300   Cols: 19
+  Columns & types:
+    product_id                          type=str     nulls=0
+    sku                                 type=str     nulls=0
+    product_name                        type=str     nulls=0
+    category                            type=str     nulls=0
+    subcategory                         type=str     nulls=0
+    brand                               type=str     nulls=0
+    description                         type=str     nulls=0
+    price                               type=int     nulls=0
+    mrp                                 type=int     nulls=0
+    discount_percent                    type=float   nulls=0
+    stock_quantity                      type=int     nulls=0
+    warranty_months                     type=int     nulls=0
+    returnable                          type=str     nulls=0
+    replacement_available               type=str     nulls=0
+    rating                              type=float   nulls=38
+    review_count                        type=int     nulls=0
+    weight_kg                           type=float   nulls=0
+    color                               type=str     nulls=0
+    status                              type=str     nulls=0
+  First 3 rows:
+    {'product_id': 'PROD-00001', 'sku': 'VOL-ACC-3744-CHA', 'product_name': 'Voltix 100W GaN Charger', 'category': 'Accessories', 'subcategory': 'Charger', 'brand': 'Voltix', 'description': 'Voltix 100W GaN Charger is a charger from Voltix featuring compatibility: USB-C devices, material: Tempered glass, in the box: Product + pouch + manual. Popular with students and professionals alike.', 'price': '5199', 'mrp': '5499', 'discount_percent': '5.5', 'stock_quantity': '12', 'warranty_months': '12', 'returnable': 'false', 'replacement_available': 'true', 'rating': '4.6', 'review_count': '8', 'weight_kg': '0.27', 'color': 'Charcoal', 'status': 'active'}
+    {'product_id': 'PROD-00002', 'sku': 'NOV-ACC-5682-CHA', 'product_name': 'Nova 4K Webcam', 'category': 'Accessories', 'subcategory': 'Webcam', 'brand': 'NovaTech', 'description': 'Nova 4K Webcam is a webcam from NovaTech featuring compatibility: Android & iOS devices, material: Tempered glass, in the box: Product + manual. A balanced pick for its class.', 'price': '3199', 'mrp': '3599', 'discount_percent': '11.1', 'stock_quantity': '45', 'warranty_months': '12', 'returnable': 'false', 'replacement_available': 'true', 'rating': '4.5', 'review_count': '15', 'weight_kg': '0.86', 'color': 'Charcoal', 'status': 'active'}
+    {'product_id': 'PROD-00003', 'sku': 'TER-ACC-4518-TIT', 'product_name': 'TerraByte 128GB Memory Card', 'category': 'Accessories', 'subcategory': 'Memory Card', 'brand': 'TerraByte', 'description': 'TerraByte 128GB Memory Card is a memory card from TerraByte featuring compatibility: USB-C devices, material: Tempered glass, in the box: Product + 1m cable. Backed by NovaMart-certified service.', 'price': '1399', 'mrp': '1899', 'discount_percent': '26.3', 'stock_quantity': '0', 'warranty_months': '12', 'returnable': 'false', 'replacement_available': 'true', 'rating': '4.5', 'review_count': '16', 'weight_kg': '0.95', 'color': 'Titanium', 'status': 'out_of_stock'}
+
+==========================================================================================
+STEP 2 ΓÇô REVIEWS.CSV
+  Rows: 3,000   Cols: 10
+  Columns & types:
+    review_id                           type=str     nulls=0
+    product_id                          type=str     nulls=0
+    customer_id                         type=str     nulls=0
+    order_id                            type=str     nulls=0
+    rating                              type=int     nulls=0
+    title                               type=str     nulls=0
+    review_text                         type=str     nulls=0
+    review_date                         type=str     nulls=0
+    verified_purchase                   type=str     nulls=0
+    helpful_votes                       type=int     nulls=0
+  First 3 rows:
+    {'review_id': 'REV-000001', 'product_id': 'PROD-00132', 'customer_id': 'CUST-00790', 'order_id': 'ORD-000012', 'rating': '3', 'title': 'Okay product', 'review_text': 'Okay for the price. connectivity is fine, build is a little plasticky. Courier guy was polite.', 'review_date': '2026-01-12', 'verified_purchase': 'true', 'helpful_votes': '4'}
+    {'review_id': 'REV-000002', 'product_id': 'PROD-00280', 'customer_id': 'CUST-00260', 'order_id': 'ORD-000024', 'rating': '4', 'title': 'Highly recommended', 'review_text': 'Really happy with the bass. Worth the price. Customer care took a while to respond.', 'review_date': '2026-01-16', 'verified_purchase': 'true', 'helpful_votes': '1'}
+    {'review_id': 'REV-000003', 'product_id': 'PROD-00017', 'customer_id': 'CUST-00602', 'order_id': 'ORD-000027', 'rating': '5', 'title': 'Highly recommended', 'review_text': 'Paisa vasool! fit bahut badiya hai.', 'review_date': '2026-01-19', 'verified_purchase': 'true', 'helpful_votes': '9'}
+
+==========================================================================================
+STEP 2 ΓÇô CONVERSATIONS.JSON
+  Records: 1,500
+  Top-level keys in first record: ['conversation_id', 'customer_id', 'order_id', 'ticket_id', 'channel', 'language', 'started_at', 'status', 'handled_by', 'messages']
+  {'conversation_id': 'CONV-000001', 'customer_id': 'CUST-00055', 'order_id': None, 'ticket_id': 'TICK-00001', 'channel': 'chat', 'language': 'English', 'started_at': '2026-01-02T06:18:30+05:30', 'status': 'resolved', 'handled_by': 'bot', 'messages': [{'role': 'customer', 'timestamp': '2026-01-02T06:1
+  {'conversation_id': 'CONV-000002', 'customer_id': 'CUST-00708', 'order_id': None, 'ticket_id': None, 'channel': 'email', 'language': 'English', 'started_at': '2026-01-02T15:20:55+05:30', 'status': 'resolved', 'handled_by': 'human', 'messages': [{'role': 'customer', 'timestamp': '2026-01-02T15:20:55+
+
+==========================================================================================
+STEP 3 ΓÇô DISTINCT VALUES FOR CATEGORICAL COLUMNS
+
+  orders.csv ΓåÆ payment_status:
+    'paid'                         : 7028
+    'refunded'                     : 622
+    'partially_refunded'           : 130
+    'failed'                       : 121
+    'pending'                      : 99
+
+  orders.csv ΓåÆ delivery_status:
+    'delivered'                    : 7292
+    'not_dispatched'               : 509
+    'in_transit'                   : 127
+    'out_for_delivery'             : 47
+    'lost'                         : 25
+
+  orders.csv ΓåÆ refund_status:
+    'none'                         : 7080
+    'processed'                    : 622
+    'partial'                      : 130
+    'rejected'                     : 101
+    'pending'                      : 67
+
+  orders.csv ΓåÆ payment_method:
+    'UPI'                          : 3439
+    'cash_on_delivery'             : 1457
+    'credit_card'                  : 1153
+    'debit_card'                   : 1057
+    'net_banking'                  : 519
+    'wallet'                       : 375
+
+  orders.csv ΓåÆ order_status:
+    'delivered'                    : 6841
+    'cancelled'                    : 485
+    'returned'                     : 321
+    'shipped'                      : 152
+    'partially_returned'           : 130
+    'out_for_delivery'             : 47
+    'processing'                   : 18
+    'placed'                       : 3
+    'confirmed'                    : 3
+
+  orders.csv ΓåÆ state:
+    'Maharashtra'                  : 1136
+    'Tamil Nadu'                   : 927
+    'Gujarat'                      : 898
+    'Karnataka'                    : 756
+    'West Bengal'                  : 721
+    'Telangana'                    : 541
+    'Uttar Pradesh'                : 504
+    'Delhi'                        : 444
+    'Rajasthan'                    : 368
+    'Kerala'                       : 323
+    'Madhya Pradesh'               : 317
+    'Haryana'                      : 184
+    'Andhra Pradesh'               : 169
+    'Punjab'                       : 126
+    'Chandigarh'                   : 123
+    'Chhattisgarh'                 : 108
+    'Bihar'                        : 96
+    'Odisha'                       : 77
+    'Goa'                          : 70
+    'Jharkhand'                    : 43
+
+  orders.csv ΓåÆ estimated_delivery_date:
+    '2026-09-24'                   : 59
+    '2026-09-29'                   : 59
+    '2026-10-01'                   : 56
+    '2026-09-14'                   : 55
+    '2026-09-19'                   : 54
+    '2026-09-20'                   : 54
+    '2026-10-02'                   : 54
+    '2026-08-30'                   : 53
+    '2026-09-27'                   : 53
+    '2026-09-28'                   : 53
+    '2026-09-30'                   : 53
+    '2026-08-05'                   : 52
+    '2026-08-27'                   : 51
+    '2026-09-21'                   : 51
+    '2026-09-26'                   : 50
+    '2026-09-13'                   : 49
+    '2026-08-06'                   : 48
+    '2026-08-26'                   : 48
+    '2026-09-10'                   : 48
+    '2026-09-25'                   : 48
+
+  orders.csv ΓåÆ actual_delivery_date:
+    ''                             : 708
+    '2026-09-28'                   : 56
+    '2026-09-12'                   : 54
+    '2026-09-20'                   : 54
+    '2026-09-29'                   : 54
+    '2026-09-27'                   : 53
+    '2026-09-24'                   : 52
+    '2026-10-01'                   : 52
+    '2026-09-05'                   : 51
+    '2026-09-26'                   : 51
+    '2026-08-26'                   : 48
+    '2026-08-30'                   : 48
+    '2026-09-10'                   : 48
+    '2026-09-21'                   : 48
+    '2026-08-06'                   : 47
+    '2026-09-03'                   : 47
+    '2026-09-14'                   : 47
+    '2026-08-24'                   : 46
+    '2026-09-08'                   : 45
+    '2026-09-13'                   : 45
+
+  orders.csv ΓåÆ delivery_otp_verified:
+    'true'                         : 5115
+    'false'                        : 2885
+
+  orders.csv ΓåÆ cancellation_status:
+    'none'                         : 7433
+    'approved'                     : 364
+    'auto_cancelled'               : 121
+    'rejected'                     : 82
+
+  customers.csv ΓåÆ loyalty_tier:
+    'bronze'                       : 1125
+    'silver'                       : 225
+    'gold'                         : 105
+    'platinum'                     : 45
+
+  customers.csv ΓåÆ account_status:
+    'active'                       : 1403
+    'inactive'                     : 61
+    'suspended'                    : 36
+
+  customers.csv ΓåÆ state:
+    'Maharashtra'                  : 217
+    'Gujarat'                      : 163
+    'Tamil Nadu'                   : 161
+    'Karnataka'                    : 150
+    'Telangana'                    : 108
+    'Delhi'                        : 107
+    'Uttar Pradesh'                : 105
+    'West Bengal'                  : 104
+    'Madhya Pradesh'               : 61
+    'Rajasthan'                    : 56
+    'Haryana'                      : 51
+    'Kerala'                       : 50
+    'Bihar'                        : 30
+    'Punjab'                       : 27
+    'Andhra Pradesh'               : 26
+    'Chandigarh'                   : 21
+    'Odisha'                       : 17
+    'Assam'                        : 13
+    'Chhattisgarh'                 : 12
+    'Uttarakhand'                  : 8
+
+  order_items.csv ΓåÆ item_status:
+    'delivered'                    : 10769
+    'cancelled'                    : 743
+    'returned'                     : 579
+    'shipped'                      : 326
+    'ordered'                      : 27
+
+  order_items.csv ΓåÆ return_status:
+    'none'                         : 11645
+    'refunded'                     : 579
+    'rejected'                     : 171
+    'pickup_scheduled'             : 21
+    'received'                     : 16
+    'approved'                     : 8
+    'requested'                    : 4
+
+  order_items.csv ΓåÆ refund_amount:
+    '0'                            : 11398
+    '176'                          : 55
+    '3775'                         : 19
+    '168'                          : 14
+    '9085'                         : 14
+    '2949'                         : 14
+    '163'                          : 14
+    '159'                          : 13
+    '156'                          : 13
+    '8141'                         : 12
+    '27139'                        : 10
+    '3893'                         : 10
+    '1179'                         : 10
+    '188'                          : 10
+    '352'                          : 9
+    '8359'                         : 8
+    '3398'                         : 8
+    '164'                          : 8
+    '5073'                         : 8
+    '7905'                         : 8
+
+  reviews.csv ΓåÆ verified_purchase:
+    'true'                         : 3000
+
+==========================================================================================
+STEP 4 ΓÇô FORMAT INSPECTION
+
+  customer_id samples: ['CUST-00001', 'CUST-00002', 'CUST-00003', 'CUST-00004', 'CUST-00005', 'CUST-00006', 'CUST-00007', 'CUST-00008', 'CUST-00009', 'CUST-00010']
+  order_id samples   : ['ORD-000001', 'ORD-000002', 'ORD-000003', 'ORD-000004', 'ORD-000005', 'ORD-000006', 'ORD-000007', 'ORD-000008', 'ORD-000009', 'ORD-000010']
+  delivery_otp_verified samples      : ['false', 'false', 'false', 'true', 'true', 'true', 'true', 'true', 'false', 'true', 'false', 'true', 'true', 'false', 'false']
+  payment_status distinct: {'paid': 7028, 'refunded': 622, 'failed': 121, 'partially_refunded': 130, 'pending': 99}
+  estimated_delivery_date samples: ['2026-01-07', '2026-01-05', '2026-01-04', '2026-01-06', '2026-01-06']
+  loyalty_tier distinct: {'bronze': 1125, 'silver': 225, 'gold': 105, 'platinum': 45}
+
+==========================================================================================
+STEP 5 ΓÇô DATA-QUALITY FLAGS
+
+  Duplicate order_ids: 0  (showing up to 5)
+
+  Pending-payment orders: 99
+    ORD-000134, payment=pending, status=None
+    ORD-000135, payment=pending, status=None
+    ORD-000146, payment=pending, status=None
+
+  Already-refunded orders: 0
+
+  Orders near return deadline (5-7 days since delivery, 7-day assumed window): 156
+    order_id=ORD-007383, delivered=2026-09-26, days_since=7
+    order_id=ORD-007385, delivered=2026-09-26, days_since=7
+    order_id=ORD-007400, delivered=2026-09-26, days_since=7
+    order_id=ORD-007401, delivered=2026-09-26, days_since=7
+    order_id=ORD-007412, delivered=2026-09-27, days_since=6
+
+==========================================================================================
+STEP 6 ΓÇô EVAL CASE CANDIDATES
+(Reading to build selection table ΓÇö see markdown output at end)
+
+  order_id | customer_id | name | tier | product | status | delivered_at | otp_verified | payment_status | why
+  ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  ORD-000004   | CUST-00714   | Harleen              | silver     |                           | delivered       | 2026-01-06                | true  | paid            | OTP-verified delivered order
+  ORD-000134   | CUST-00413   | Gaurav               | gold       |                           | cancelled       | 2026-01-17                | false | pending         | Pending payment order
+  ORD-007383   | CUST-01429   | Aishwarya            | platinum   |                           | delivered       | 2026-09-26                | true  | paid            | Near return deadline (7 days since delivery, 7d assumed)
+  ORD-000002   | CUST-01107   | Suraj                | platinum   |                           | delivered       | 2026-01-05                | false | paid            | Premium/loyalty customer
+  ORD-000001   | CUST-00615   | Vihaan               | bronze     |                           | delivered       | 2026-01-07                | false | paid            | Filler ΓÇô distinct order
+  ORD-000003   | CUST-00233   | Anuj                 | silver     |                           | cancelled       | 2026-01-04                | false | refunded        | Filler ΓÇô distinct order
+  ORD-000005   | CUST-00550   | Karthik              | gold       |                           | delivered       | 2026-01-06                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000006   | CUST-00328   | Spoorthi             | platinum   |                           | delivered       | 2026-01-07                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000007   | CUST-00558   | Gokul                | bronze     |                           | delivered       | 2026-01-07                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000008   | CUST-00409   | Ritu                 | bronze     |                           | delivered       | 2026-01-05                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000009   | CUST-00343   | Zoya                 | gold       |                           | returned        | 2026-01-07                | false | refunded        | Filler ΓÇô distinct order
+  ORD-000010   | CUST-00853   | Ayaan                | bronze     |                           | delivered       | 2026-01-06                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000011   | CUST-01056   | Harpreet             | silver     |                           | delivered       | 2026-01-09                | false | paid            | Filler ΓÇô distinct order
+  ORD-000012   | CUST-00790   | Suraj                | silver     |                           | delivered       | 2026-01-08                | true  | paid            | Filler ΓÇô distinct order
+  ORD-000013   | CUST-00148   | Aarav                | bronze     |                           | delivered       | 2026-01-07                | true  | paid            | Filler ΓÇô distinct order
+
+==========================================================================================
+STEP 7 ΓÇô REAL CUSTOMER PHRASINGS
+
+  # | Source | Phrasing
+   1. [conversations.json] Is the KiteWorks Board Edge 60 in stock right now?
+   2. [conversations.json] Like I mentioned earlier, I need this sorted this week.
+   3. [conversations.json] Need to update my phone number on the account.
+   4. [conversations.json] Will I get this on SMS or email?
+   5. [conversations.json] Can you also check if there's anything else pending on my account?
+   6. [conversations.json] Okay thanks.
+   7. [conversations.json] Delivery kab hogi? Order id ORD-000023
+   8. [conversations.json] I am done being polite. Does the KiteWorks Board Edge K1 come with a warranty? How many months?
+   9. [conversations.json] Just fix it already!
+  10. [conversations.json] Aap log sirf bahane banate ho.
+
+==========================================================================================
+DONE. See below for markdown schema cheat-sheet.

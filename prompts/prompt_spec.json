@@ -1,0 +1,67 @@
+{
+  "project": "Sentinel-Governor AI Agent for NovaMart",
+  "milestone": "m3/prompts",
+  "version": "1.0.0",
+  "authority_hierarchy": {
+    "L1": {
+      "name": "System Prompt",
+      "priority": 1,
+      "description": "Immutable constitution governing agent behavior, safety, and reasoning."
+    },
+    "L2": {
+      "name": "Active Policy",
+      "priority": 2,
+      "source_tool": "get_policy",
+      "description": "Dynamic business rules for returns, windows, caps, and restocking fees."
+    },
+    "L3": {
+      "name": "Tool Results / Database",
+      "priority": 3,
+      "description": "Ground truth state for orders, deliveries, payments, and tickets."
+    },
+    "L4": {
+      "name": "Customer Messages",
+      "priority": 4,
+      "description": "Untrusted user claims and requests."
+    }
+  },
+  "workflow_steps": [
+    "1. UNDERSTAND",
+    "2. CONTEXT",
+    "3. VERIFY",
+    "4. POLICY",
+    "5. DECIDE",
+    "6. ACT",
+    "7. CONFIRM",
+    "8. FINALIZE"
+  ],
+  "decisions": [
+    {
+      "name": "ANSWER",
+      "criteria": "Clear informational inquiry, facts verified, zero policy violation."
+    },
+    {
+      "name": "ASK",
+      "criteria": "Missing order ID, multiple candidate orders, missing photo, or unclear reason. Max 1 question."
+    },
+    {
+      "name": "ACT",
+      "criteria": "Claims verified against DB, eligible under active policy, within auto-approval cap, zero risk flags."
+    },
+    {
+      "name": "ESCALATE",
+      "criteria": "Legal/safety threats, OTP-verified non-delivery dispute, amount > cap, repeated refund history, account mismatch."
+    }
+  ],
+  "tools": [
+    "get_order",
+    "get_policy",
+    "check_refund_eligibility",
+    "calculate_refund",
+    "process_refund",
+    "update_shipping_address",
+    "create_ticket",
+    "escalate_to_human",
+    "finalize"
+  ]
+}
