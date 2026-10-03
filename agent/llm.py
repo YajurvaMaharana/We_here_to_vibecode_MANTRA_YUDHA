@@ -30,12 +30,14 @@ class LLMResponse(BaseModel):
     text: str = ""
     tool_calls: list[ToolCall] = Field(default_factory=list)
     usage: dict[str, Any] = Field(default_factory=dict)
+    raw_content: Any = None
 
     def __init__(
         self,
         text: str | None = None,
         tool_calls: list[ToolCall] | None = None,
         usage: dict[str, Any] | None = None,
+        raw_content: Any = None,
         **kwargs: Any,
     ) -> None:
         if text is not None:
@@ -44,6 +46,8 @@ class LLMResponse(BaseModel):
             kwargs["tool_calls"] = tool_calls
         if usage is not None:
             kwargs["usage"] = usage
+        if raw_content is not None or "raw_content" not in kwargs:
+            kwargs["raw_content"] = raw_content
         super().__init__(**kwargs)
 
 
@@ -253,6 +257,16 @@ def _convert_messages(messages: list[dict[str, Any] | types.Content]) -> list[ty
             contents.append(msg)
             continue
 
+        # If a dictionary message contains the original raw Content object, use it directly!
+        if isinstance(msg, dict):
+            raw_c = msg.get("raw_content")
+            if isinstance(raw_c, types.Content):
+                contents.append(raw_c)
+                continue
+            if isinstance(msg.get("content"), types.Content):
+                contents.append(msg["content"])
+                continue
+
         role = msg.get("role", "user")
         target_role = "model" if role in ("assistant", "model") else "user"
         parts: list[types.Part] = []
@@ -261,31 +275,24 @@ def _convert_messages(messages: list[dict[str, Any] | types.Content]) -> list[ty
             name = msg.get("name", "tool_result")
             call_id = msg.get("tool_call_id") or msg.get("id")
             raw_resp = msg.get("content", {})
-            if isinstance(raw_resp, dict):
-                resp_dict = raw_resp
-            elif hasattr(raw_resp, "model_dump"):
-                resp_dict = raw_resp.model_dump()
+            if hasattr(raw_resp, "model_dump"):
+                raw_resp = raw_resp.model_dump()
             elif isinstance(raw_resp, str):
                 try:
-                    parsed = json.loads(raw_resp)
-                    resp_dict = parsed if isinstance(parsed, dict) else {"result": parsed}
+                    raw_resp = json.loads(raw_resp)
                 except (ValueError, TypeError, json.JSONDecodeError):
-                    resp_dict = {"result": raw_resp}
+                    pass
+
+            # Wrap in {"result": result} per SDK requirement
+            if isinstance(raw_resp, dict) and "result" in raw_resp:
+                resp_dict = raw_resp
             else:
                 resp_dict = {"result": raw_resp}
 
-            if call_id:
-                parts.append(
-                    types.Part(
-                        function_response=types.FunctionResponse(
-                            id=str(call_id),
-                            name=str(name),
-                            response=resp_dict,
-                        )
-                    )
-                )
-            else:
-                parts.append(types.Part.from_function_response(name=name, response=resp_dict))
+            part = types.Part.from_function_response(name=str(name), response=resp_dict)
+            if call_id and part.function_response is not None:
+                part.function_response.id = str(call_id)
+            parts.append(part)
         else:
             content_text = msg.get("content")
             if content_text:
@@ -302,7 +309,10 @@ def _convert_messages(messages: list[dict[str, Any] | types.Content]) -> list[ty
             if tool_calls and isinstance(tool_calls, list):
                 for tc in tool_calls:
                     if isinstance(tc, ToolCall):
-                        parts.append(types.Part.from_function_call(name=tc.name, args=tc.args))
+                        p = types.Part.from_function_call(name=tc.name, args=tc.args)
+                        if getattr(tc, "thought_signature", None):
+                            p.thought_signature = tc.thought_signature
+                        parts.append(p)
                     elif isinstance(tc, dict):
                         tc_name = tc.get("name") or tc.get("function", {}).get("name", "")
                         tc_args = tc.get("args") or tc.get("function", {}).get("arguments", {})
@@ -311,7 +321,10 @@ def _convert_messages(messages: list[dict[str, Any] | types.Content]) -> list[ty
                                 tc_args = json.loads(tc_args)
                             except (ValueError, TypeError, json.JSONDecodeError):
                                 tc_args = {"raw": tc_args}
-                        parts.append(types.Part.from_function_call(name=tc_name, args=tc_args))
+                        p = types.Part.from_function_call(name=tc_name, args=tc_args)
+                        if tc.get("thought_signature"):
+                            p.thought_signature = tc["thought_signature"]
+                        parts.append(p)
 
         if not parts:
             continue
@@ -330,6 +343,10 @@ def _parse_gemini_response(response: Any) -> LLMResponse:
     tool_calls: list[ToolCall] = []
 
     candidates = getattr(response, "candidates", None) or []
+    raw_content = None
+    if candidates and getattr(candidates[0], "content", None):
+        raw_content = candidates[0].content
+
     for candidate in candidates:
         content = getattr(candidate, "content", None)
         if not content:
@@ -349,11 +366,13 @@ def _parse_gemini_response(response: Any) -> LLMResponse:
                         call_args = dict(call_args)
                     except (ValueError, TypeError):
                         call_args = {"value": call_args}
+                sig = getattr(part, "thought_signature", None) or getattr(fc, "thought_signature", None)
                 tool_calls.append(
                     ToolCall(
                         id=call_id,
                         name=getattr(fc, "name", ""),
                         args=call_args,
+                        thought_signature=sig,
                     )
                 )
 
@@ -367,11 +386,13 @@ def _parse_gemini_response(response: Any) -> LLMResponse:
                     call_args = dict(call_args)
                 except (ValueError, TypeError):
                     call_args = {"value": call_args}
+            sig = getattr(fc, "thought_signature", None)
             tool_calls.append(
                 ToolCall(
                     id=call_id,
                     name=getattr(fc, "name", ""),
                     args=call_args,
+                    thought_signature=sig,
                 )
             )
 
@@ -397,6 +418,7 @@ def _parse_gemini_response(response: Any) -> LLMResponse:
         text=extracted_text,
         tool_calls=tool_calls,
         usage=usage,
+        raw_content=raw_content,
     )
 
 
@@ -472,11 +494,17 @@ def chat(
 
     tool_specs = build_tool_specs(tools) if tools else None
 
+    # Configure thinking budget if using thinking models
+    thinking_config = None
+    if any(m in resolved_model.lower() for m in ["thinking", "2.5"]):
+        thinking_config = types.ThinkingConfig(thinking_budget=0)
+
     config = types.GenerateContentConfig(
         temperature=0.0,
         system_instruction=system if system else None,
         tools=tool_specs,
         http_options=types.HttpOptions(timeout=60000),
+        thinking_config=thinking_config,
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
         if tool_specs
         else None,
@@ -496,6 +524,10 @@ def chat(
             )
             return _parse_gemini_response(response)
         except errors.APIError as exc:
+            # If thinking_config caused 400 on models that don't support it, disable and retry immediately
+            if getattr(exc, "code", None) == 400 and config.thinking_config is not None:
+                config.thinking_config = None
+                continue
             # If the model was retired/unavailable in API version, fall back to modern flash-lite
             if (
                 getattr(exc, "code", None) == 404
