@@ -1,0 +1,32 @@
+[
+  {
+    "ticket_id": "ST-1001",
+    "id": "ST-1001",
+    "customer_id": "C101",
+    "order_id": "NM-1042",
+    "category": "delivery_status",
+    "status": "closed",
+    "summary": "Customer checked delivery status on Sep 29",
+    "created_at": "2026-09-29T10:00:00+05:30"
+  },
+  {
+    "ticket_id": "ST-1002",
+    "id": "ST-1002",
+    "customer_id": "C103",
+    "order_id": "NM-1205",
+    "category": "product_inquiry",
+    "status": "open",
+    "summary": "Customer requested espresso machine descale instructions",
+    "created_at": "2026-10-01T16:20:00+05:30"
+  },
+  {
+    "ticket_id": "ST-1003",
+    "id": "ST-1003",
+    "customer_id": "C106",
+    "order_id": "NM-1512",
+    "category": "warranty_claim",
+    "status": "open",
+    "summary": "Customer asked about warranty coverage for left ear cup",
+    "created_at": "2026-09-15T11:45:00+05:30"
+  }
+]
