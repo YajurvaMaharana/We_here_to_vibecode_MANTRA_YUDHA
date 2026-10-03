@@ -29,12 +29,14 @@ class ToolCall(BaseModel):
     id: str = Field(default_factory=lambda: f"call_{uuid.uuid4().hex[:8]}")
     name: str
     args: dict[str, Any] = Field(default_factory=dict)
+    thought_signature: Any = None
 
     def __init__(
         self,
         id: str | None = None,
         name: str | None = None,
         args: dict[str, Any] | None = None,
+        thought_signature: Any = None,
         **kwargs: Any,
     ) -> None:
         if id is not None:
@@ -43,6 +45,8 @@ class ToolCall(BaseModel):
             kwargs["name"] = name
         if args is not None:
             kwargs["args"] = args
+        if thought_signature is not None or "thought_signature" not in kwargs:
+            kwargs["thought_signature"] = thought_signature
         super().__init__(**kwargs)
 
 
