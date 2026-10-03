@@ -1,0 +1,8 @@
+anthropic
+pydantic>=2
+streamlit
+pandas
+python-dotenv
+tzdata
+pytest
+ruff

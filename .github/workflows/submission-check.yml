@@ -1,0 +1,19 @@
+name: Submission Check
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required files exist
+        run: |
+          for f in README.md requirements.txt .env.example docs/ARCHITECTURE.md \
+                   docs/PROMPT_STRATEGY.md docs/MODELS.md docs/LIMITATIONS.md; do
+            test -f "$f" || { echo "::error::Missing $f"; exit 1; }
+          done
+      - name: README has demo + setup
+        run: |
+          grep -qi "demo" README.md || { echo "::error::README needs the demo link"; exit 1; }
+          grep -qi "pip install" README.md || { echo "::error::README needs setup steps"; exit 1; }
