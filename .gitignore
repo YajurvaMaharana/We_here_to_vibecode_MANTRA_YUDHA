@@ -1,7 +1,11 @@
+.env
+data/runtime/
 __pycache__/
+*.py[cod]
 *.pyc
 *.pyo
 *.pyd
+.venv/
 .system_generated/
 scratch/
 .DS_Store

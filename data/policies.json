@@ -1,0 +1,66 @@
+[
+  {
+    "version": "v1",
+    "effective_date": "2026-01-01T00:00:00+05:30",
+    "base_refund_window_days": 7,
+    "loyalty_extensions": {
+      "regular": 0,
+      "silver": 3,
+      "gold": 7,
+      "platinum": 14
+    },
+    "category_windows": {
+      "electronics": 7,
+      "fashion": 10,
+      "appliances": 10,
+      "personal_care": 0
+    },
+    "restocking_fees": {
+      "electronics": 0.15,
+      "appliances": 0.10,
+      "default": 0.05
+    },
+    "approval_threshold": 5000.00,
+    "non_returnable_categories": [
+      "personal_care",
+      "hygiene"
+    ],
+    "disallowed_fee_reasons": [
+      "damaged",
+      "defective",
+      "wrong_item"
+    ]
+  },
+  {
+    "version": "v2",
+    "effective_date": "2026-10-15T00:00:00+05:30",
+    "base_refund_window_days": 10,
+    "loyalty_extensions": {
+      "regular": 0,
+      "silver": 5,
+      "gold": 10,
+      "platinum": 20
+    },
+    "category_windows": {
+      "electronics": 10,
+      "fashion": 14,
+      "appliances": 14,
+      "personal_care": 0
+    },
+    "restocking_fees": {
+      "electronics": 0.10,
+      "appliances": 0.08,
+      "default": 0.05
+    },
+    "approval_threshold": 7500.00,
+    "non_returnable_categories": [
+      "personal_care",
+      "hygiene"
+    ],
+    "disallowed_fee_reasons": [
+      "damaged",
+      "defective",
+      "wrong_item"
+    ]
+  }
+]

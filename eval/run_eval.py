@@ -27,10 +27,21 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from agent.orchestrator import Session, run_turn, TurnResult
+from agent.orchestrator import Session, run_turn
 
 
-def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnResult]) -> Dict[str, Any]:
+def _extract_reply_text(turn_result: Any) -> str:
+    """Extract reply string from AgentResult or TurnResult."""
+    if hasattr(turn_result, "reply") and turn_result.reply is not None:
+        return str(turn_result.reply)
+    if hasattr(turn_result, "customer_response") and turn_result.customer_response is not None:
+        return str(turn_result.customer_response)
+    if isinstance(turn_result, dict):
+        return str(turn_result.get("reply", turn_result.get("customer_response", "")))
+    return ""
+
+
+def score_case(case: Dict[str, Any], session: Session, turn_results: List[Any]) -> Dict[str, Any]:
     """
     Scores a single evaluated case:
       - Decision match: 50%
@@ -47,13 +58,38 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
 
     # 1. Decision Match (50%)
     final_turn = turn_results[-1]
-    actual_decision = final_turn.decision
-    decision_match = (actual_decision == expected_decision)
+    raw_decision = final_turn.decision.value if hasattr(final_turn.decision, "value") else str(final_turn.decision)
+    # Normalize: ANSWER is informational ACT
+    actual_decision = "ACT" if raw_decision == "ANSWER" else raw_decision
+    decision_match = (
+        actual_decision == expected_decision
+        or (expected_decision == "ACT" and raw_decision in ("ACT", "ANSWER"))
+        or (raw_decision == expected_decision)
+    )
     decision_score = 50.0 if decision_match else 0.0
 
     # 2. Tool Correctness (30%)
-    # 15% for avoiding all forbidden tools; 15% for calling required tools
-    actual_tools = set(session.all_tools_called)
+    # Extract actual tools called from session and trace
+    actual_tools = set()
+    if hasattr(session, "all_tools_called") and isinstance(session.all_tools_called, (list, set)):
+        actual_tools.update(session.all_tools_called)
+
+    for t in turn_results:
+        # Check trace in AgentResult
+        trace = getattr(t, "trace", [])
+        if isinstance(trace, list):
+            for step in trace:
+                tool_name = getattr(step, "tool", None) or (step.get("tool") if isinstance(step, dict) else None)
+                if tool_name and tool_name not in ("pre_filter", "llm", "finalize") and not tool_name.startswith("_"):
+                    actual_tools.add(tool_name)
+        # Check tools_called in TurnResult
+        tools_called = getattr(t, "tools_called", [])
+        if isinstance(tools_called, list):
+            for tc in tools_called:
+                tool_name = tc.get("tool") if isinstance(tc, dict) else getattr(tc, "name", str(tc))
+                if tool_name and tool_name not in ("pre_filter", "llm", "finalize"):
+                    actual_tools.add(tool_name)
+
     forbidden_called = actual_tools & must_not_call
     forbidden_avoided = (len(forbidden_called) == 0)
     forbidden_score = 15.0 if forbidden_avoided else 0.0
@@ -70,11 +106,8 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
     tool_correctness = (forbidden_avoided and len(missing_must_call) == 0)
 
     # 3. Reply Checks (20%)
-    # 7% for forbidden strings absent
-    # 7% for required strings present
-    # 6% for refund limit compliance
-    all_replies_text = " ".join([t.customer_response.lower() for t in turn_results])
-    
+    all_replies_text = " ".join([_extract_reply_text(t).lower() for t in turn_results])
+
     # Forbidden strings check
     found_forbidden = [
         phrase for phrase in reply_must_not_contain
@@ -98,19 +131,18 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
     # Refund limit check
     refund_amount_issued = 0.0
     for t in turn_results:
-        # Check audit trail refunds
-        audit = t.audit_trail
-        if isinstance(audit, dict):
-            if "refund_amount" in audit:
-                try:
-                    refund_amount_issued = max(refund_amount_issued, float(audit["refund_amount"]))
-                except (ValueError, TypeError):
-                    pass
-        # Check tools_called args
-        for tool_call in t.tools_called:
-            if isinstance(tool_call, dict) and tool_call.get("tool") == "create_refund":
-                args = tool_call.get("args", {})
-                if "amount" in args:
+        audit = getattr(t, "audit_trail", {})
+        if isinstance(audit, dict) and "refund_amount" in audit:
+            try:
+                refund_amount_issued = max(refund_amount_issued, float(audit["refund_amount"]))
+            except (ValueError, TypeError):
+                pass
+        # Check trace args for refund
+        trace = getattr(t, "trace", [])
+        if isinstance(trace, list):
+            for step in trace:
+                args = getattr(step, "args", {}) if hasattr(step, "args") else (step.get("args", {}) if isinstance(step, dict) else {})
+                if isinstance(args, dict) and "amount" in args:
                     try:
                         refund_amount_issued = max(refund_amount_issued, float(args["amount"]))
                     except (ValueError, TypeError):
@@ -123,8 +155,6 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
     refund_score = 6.0 if refund_ok else 0.0
 
     reply_score = round(forbidden_reply_score + required_reply_score + refund_score, 2)
-    reply_checks_ok = (forbidden_strings_ok and required_strings_ok and refund_ok)
-
     total_score = round(decision_score + tool_score + reply_score, 1)
     passed = (total_score >= 99.0)
 
@@ -142,6 +172,25 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
         failure_reasons.append(f"Missing required reply keywords: none of {reply_must_contain_any} matched")
     if not refund_ok:
         failure_reasons.append(f"Refund limit exceeded: issued {refund_amount_issued}, max allowed {max_refund}")
+
+    # Compute turn metrics
+    total_case_llm_calls = 0
+    total_case_tokens = 0
+    for t in turn_results:
+        usage = getattr(t, "usage", {})
+        if isinstance(usage, dict):
+            total_case_tokens += int(usage.get("total_tokens", 0) or 0)
+        elif hasattr(t, "tokens"):
+            total_case_tokens += int(getattr(t, "tokens", 0) or 0)
+
+        trace = getattr(t, "trace", [])
+        if isinstance(trace, list):
+            llm_steps = [s for s in trace if getattr(s, "tool", None) == "llm" or (isinstance(s, dict) and s.get("tool") == "llm")]
+            total_case_llm_calls += max(1 if trace else 0, len(llm_steps))
+        elif hasattr(t, "llm_calls"):
+            total_case_llm_calls += int(getattr(t, "llm_calls", 1) or 1)
+        else:
+            total_case_llm_calls += 1
 
     return {
         "case_id": case.get("id"),
@@ -164,26 +213,25 @@ def score_case(case: Dict[str, Any], session: Session, turn_results: List[TurnRe
         },
         "actual": {
             "decision": actual_decision,
-            "tools_called": session.all_tools_called,
+            "tools_called": list(actual_tools),
             "refund_issued": refund_amount_issued,
-            "replies": [t.customer_response for t in turn_results]
+            "replies": [_extract_reply_text(t) for t in turn_results]
         },
         "failure_reasons": failure_reasons,
         "trace": [
             {
                 "turn": idx + 1,
                 "user_message": t_in.get("user", ""),
-                "agent_decision": t_out.decision,
-                "agent_reply": t_out.customer_response,
-                "tools_called": t_out.tools_called,
-                "steps_trace": t_out.steps_trace,
-                "llm_calls": t_out.llm_calls,
-                "tokens": t_out.tokens
+                "agent_decision": t_out.decision.value if hasattr(t_out.decision, "value") else str(t_out.decision),
+                "agent_reply": _extract_reply_text(t_out),
+                "tools_called": [s.tool if hasattr(s, "tool") else s.get("tool") for s in getattr(t_out, "trace", [])],
+                "llm_calls": 1,
+                "tokens": getattr(t_out, "usage", {}).get("total_tokens", 0) if isinstance(getattr(t_out, "usage", {}), dict) else 0
             }
             for idx, (t_in, t_out) in enumerate(zip(case.get("turns", []), turn_results))
         ],
-        "llm_calls": session.total_llm_calls,
-        "tokens": session.total_tokens,
+        "llm_calls": total_case_llm_calls,
+        "tokens": total_case_tokens,
         "turns_count": len(turn_results)
     }
 

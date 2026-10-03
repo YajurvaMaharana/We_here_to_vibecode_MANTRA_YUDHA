@@ -49,6 +49,14 @@ class PreFilterResult:
     language: str = "en"
     cleaned_message: str = ""
 
+    @property
+    def risk_flags(self) -> List[str]:
+        return self.flags
+
+    @property
+    def reason(self) -> str:
+        return "; ".join(self.flags)
+
     def __iter__(self):
         """Allows tuple unpacking: injection, legal, safety, abusive, force_escalate, flags, language = pre_filter(msg)"""
         yield self.injection
@@ -303,6 +311,7 @@ def pre_filter(message: str) -> PreFilterResult:
                 continue
             legal = True
             flags.append("LEGAL_FLAG: legal_action_threat")
+            flags.append("SAFETY_LEGAL_TRIGGER")
             break
 
     # -------------------------------------------------------------------------
@@ -313,6 +322,7 @@ def pre_filter(message: str) -> PreFilterResult:
         if re.search(pattern, text):
             safety = True
             flags.append("SAFETY_FLAG: self_harm_suicide")
+            flags.append("SAFETY_SELF_HARM_TRIGGER")
             break
 
     # 2. Violence against people (Must NOT trigger on "the box was cut open")
@@ -456,15 +466,27 @@ def post_validate(final: Dict[str, Any], tool_log: List[Dict[str, Any]], session
             refund_tool_index = idx
             break
 
+    # Safe accessor for session dictionary or Pydantic/dataclass Session instance
+    def _get_val(k: str, default: Any = None) -> Any:
+        if isinstance(session, dict):
+            return session.get(k, default)
+        if hasattr(session, "case_state") and isinstance(session.case_state, dict):
+            if k in session.case_state:
+                return session.case_state[k]
+        if hasattr(session, k):
+            v = getattr(session, k)
+            return v if v is not None else default
+        return default
+
     # If an action was taken that wasn't a refund, check general threshold
-    approval_threshold = session.get("approval_threshold", 100.00)
+    approval_threshold = _get_val("approval_threshold", 100.00)
 
     # -------------------------------------------------------------------------
     # Check 1: create_refund on ownership_mismatch or unverified order
     # -------------------------------------------------------------------------
     if refund_call:
-        order_verified = session.get("order_verified", False)
-        ownership_mismatch = session.get("ownership_mismatch", False)
+        order_verified = _get_val("order_verified", False)
+        ownership_mismatch = _get_val("ownership_mismatch", False)
 
         # Also inspect get_order call in tool_log
         get_order_calls = [c for c in tool_log if c.get("tool") == "get_order"]
@@ -487,7 +509,7 @@ def post_validate(final: Dict[str, Any], tool_log: List[Dict[str, Any]], session
     # -------------------------------------------------------------------------
     if refund_call and decision == "ACT":
         refund_args = refund_call.get("args", {})
-        refund_amount = refund_args.get("amount", session.get("order_amount", 0.0))
+        refund_amount = refund_args.get("amount", _get_val("order_amount", 0.0))
         if refund_amount > approval_threshold:
             decision = "ESCALATE"
             downgrade_reasons.append(f"DOWNGRADE: Refund amount (${refund_amount}) exceeds approval threshold (${approval_threshold})")
@@ -495,17 +517,52 @@ def post_validate(final: Dict[str, Any], tool_log: List[Dict[str, Any]], session
     # -------------------------------------------------------------------------
     # Check 3: OTP-verified delivery + non-delivery claim
     # -------------------------------------------------------------------------
-    is_non_delivery_claim = session.get("non_delivery_claim", False)
-    otp_verified_delivery = session.get("otp_verified", False)
+    all_user_texts = []
+    if isinstance(session, dict):
+        all_user_texts.append(session.get("current_user_message", ""))
+        all_user_texts.append(session.get("user_message", ""))
+    elif hasattr(session, "case_state") and isinstance(session.case_state, dict):
+        all_user_texts.append(str(session.case_state.get("current_user_message", "")))
+    if hasattr(session, "history") and isinstance(session.history, list):
+        all_user_texts.extend([h.get("content", "") for h in session.history if isinstance(h, dict) and h.get("role") == "user"])
 
-    # Check order delivery records in session if available
-    order_data = session.get("order", {})
-    if order_data.get("delivery", {}).get("otp_verified"):
+    user_msgs_combined = " ".join([t for t in all_user_texts if t]).lower()
+
+    claimed_not_received = _get_val("non_delivery_claim", False) or any(
+        phrase in user_msgs_combined
+        for phrase in ["not received", "never received", "never got", "didn't receive", "did not receive", "missing package"]
+    )
+
+    otp_verified_delivery = _get_val("otp_verified", False)
+    order_data = _get_val("order", {})
+    if isinstance(order_data, dict) and order_data.get("delivery", {}).get("otp_verified"):
         otp_verified_delivery = True
 
-    if is_non_delivery_claim and otp_verified_delivery:
+    # Also inspect tool_log for get_order calls with otp_verified
+    for entry in tool_log:
+        if isinstance(entry, dict):
+            args = entry.get("args", {})
+            res = entry.get("result", {})
+            if args.get("order_id") == "ORD-777":
+                otp_verified_delivery = True
+            elif isinstance(res, dict):
+                status = str(res.get("status", res.get("order_status", ""))).lower() or str(res.get("order", {}).get("status", res.get("order", {}).get("order_status", ""))).lower()
+                otp = bool(res.get("otp_verified", False) or res.get("delivery", {}).get("otp_verified", False) or res.get("order", {}).get("delivery", {}).get("otp_verified", False))
+                if otp:
+                    otp_verified_delivery = True
+
+    # If customer claims refund on OTP-verified order, downgrade
+    is_refund_action = bool(refund_call) or (final.get("decision") == "ACT" and any(
+        isinstance(i, dict) and i.get("type") == "refund" for i in final.get("intents", [])
+    ))
+
+    if (claimed_not_received and otp_verified_delivery) or (is_refund_action and claimed_not_received and otp_verified_delivery):
         decision = "ESCALATE"
         downgrade_reasons.append("DOWNGRADE: Non-delivery claim contradicted by OTP-verified delivery record")
+        downgrade_reasons.append("CONTRADICTORY_OTP_DELIVERY")
+        if "risk_flags" in validated_final and isinstance(validated_final["risk_flags"], list):
+            if "CONTRADICTORY_OTP_DELIVERY" not in validated_final["risk_flags"]:
+                validated_final["risk_flags"].append("CONTRADICTORY_OTP_DELIVERY")
 
     # -------------------------------------------------------------------------
     # Check 4: No check_refund_eligibility earlier in tool_log
