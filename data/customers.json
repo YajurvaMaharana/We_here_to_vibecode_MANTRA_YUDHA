@@ -1,0 +1,82 @@
+[
+  {
+    "id": "C101",
+    "customer_id": "C101",
+    "name": "Aarav Sharma",
+    "email": "aarav.sharma@example.com",
+    "phone": "+91-9876543210",
+    "loyalty_tier": "regular"
+  },
+  {
+    "id": "C102",
+    "customer_id": "C102",
+    "name": "Ananya Patel",
+    "email": "ananya.patel@example.com",
+    "phone": "+91-9876543211",
+    "loyalty_tier": "silver"
+  },
+  {
+    "id": "C103",
+    "customer_id": "C103",
+    "name": "Rohan Verma",
+    "email": "rohan.verma@example.com",
+    "phone": "+91-9876543212",
+    "loyalty_tier": "gold"
+  },
+  {
+    "id": "C104",
+    "customer_id": "C104",
+    "name": "Priya Nair",
+    "email": "priya.nair@example.com",
+    "phone": "+91-9876543213",
+    "loyalty_tier": "platinum"
+  },
+  {
+    "id": "C105",
+    "customer_id": "C105",
+    "name": "Vikram Singh",
+    "email": "vikram.singh@example.com",
+    "phone": "+91-9876543214",
+    "loyalty_tier": "regular"
+  },
+  {
+    "id": "C106",
+    "customer_id": "C106",
+    "name": "Isha Gupta",
+    "email": "isha.gupta@example.com",
+    "phone": "+91-9876543215",
+    "loyalty_tier": "silver"
+  },
+  {
+    "id": "C107",
+    "customer_id": "C107",
+    "name": "Kabir Mehta",
+    "email": "kabir.mehta@example.com",
+    "phone": "+91-9876543216",
+    "loyalty_tier": "gold"
+  },
+  {
+    "id": "C108",
+    "customer_id": "C108",
+    "name": "Diya Joshi",
+    "email": "diya.joshi@example.com",
+    "phone": "+91-9876543217",
+    "loyalty_tier": "platinum"
+  },
+  {
+    "id": "C109",
+    "customer_id": "C109",
+    "name": "Aditya Rao",
+    "email": "aditya.rao@example.com",
+    "phone": "+91-9876543218",
+    "loyalty_tier": "regular"
+  },
+  {
+    "id": "C110",
+    "customer_id": "C110",
+    "name": "Sneha Kulkarni",
+    "email": "sneha.kulkarni@example.com",
+    "phone": "+91-9876543219",
+    "loyalty_tier": "gold"
+  }
+]

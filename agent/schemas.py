@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
+import uuid
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Decision(str, Enum):
+    """Permitted final outcomes for an agent conversation turn.
+
+    Every conversation turn must resolve to exactly one of these states.
+    """
+
     ANSWER = "ANSWER"
     ASK = "ASK"
     ACT = "ACT"
@@ -16,45 +22,250 @@ class Decision(str, Enum):
 
 
 class ToolCall(BaseModel):
-    id: str
+    """Specification of a tool call emitted by an LLM."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    id: str = Field(default_factory=lambda: f"call_{uuid.uuid4().hex[:8]}")
     name: str
     args: dict[str, Any] = Field(default_factory=dict)
 
+    def __init__(
+        self,
+        id: str | None = None,
+        name: str | None = None,
+        args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if id is not None:
+            kwargs["id"] = id
+        if name is not None:
+            kwargs["name"] = name
+        if args is not None:
+            kwargs["args"] = args
+        super().__init__(**kwargs)
+
 
 class ToolResult(BaseModel):
+    """Deterministic result returned by a backend tool execution."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     ok: bool
     data: Any = None
     error: str | None = None
 
+    def __init__(
+        self,
+        ok: bool | None = None,
+        data: Any = None,
+        error: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if ok is not None:
+            kwargs["ok"] = ok
+        if data is not None or "data" not in kwargs:
+            kwargs["data"] = data
+        if error is not None:
+            kwargs["error"] = error
+        super().__init__(**kwargs)
+
 
 class Intent(BaseModel):
+    """Customer intent extracted and tracked across the conversation turn."""
+
     type: str
     order_id: str | None = None
-    status: str = "pending"
+    status: str  # "done" | "held" | "asked" | "escalated"
+
+    def __init__(
+        self,
+        type: str | None = None,
+        order_id: str | None = None,
+        status: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if type is not None:
+            kwargs["type"] = type
+        if order_id is not None or "order_id" in kwargs:
+            kwargs["order_id"] = order_id if order_id is not None else kwargs.get("order_id")
+        if status is not None:
+            kwargs["status"] = status
+        super().__init__(**kwargs)
 
 
 class TraceStep(BaseModel):
+    """Audit telemetry record for a single tool call execution step."""
+
     step: int
     tool: str
     args: dict[str, Any] = Field(default_factory=dict)
-    result_summary: str
-    ms: int = 0
+    result_summary: str = ""
+    ms: float = 0.0
     tokens: int = 0
+
+    def __init__(
+        self,
+        step: int | None = None,
+        tool: str | None = None,
+        args: dict[str, Any] | None = None,
+        result_summary: str | None = None,
+        ms: float | None = None,
+        tokens: int | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if step is not None:
+            kwargs["step"] = step
+        if tool is not None:
+            kwargs["tool"] = tool
+        if args is not None:
+            kwargs["args"] = args
+        if result_summary is not None:
+            kwargs["result_summary"] = result_summary
+        if ms is not None:
+            kwargs["ms"] = ms
+        if tokens is not None:
+            kwargs["tokens"] = tokens
+        super().__init__(**kwargs)
 
 
 class AgentResult(BaseModel):
+    """Final output contract of an agent reasoning turn."""
+
     decision: Decision
     reply: str
     intents: list[Intent] = Field(default_factory=list)
     risk_flags: list[str] = Field(default_factory=list)
     trace: list[TraceStep] = Field(default_factory=list)
-    usage: dict[str, Any] = Field(
-        default_factory=lambda: {"llm_calls": 1, "prompt_tokens": 0, "completion_tokens": 0}
-    )
+    usage: dict[str, Any] = Field(default_factory=dict)
+
+    def __init__(
+        self,
+        decision: Decision | str | None = None,
+        reply: str | None = None,
+        intents: list[Intent] | None = None,
+        risk_flags: list[str] | None = None,
+        trace: list[TraceStep] | None = None,
+        usage: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if decision is not None:
+            if isinstance(decision, str):
+                decision = Decision(decision)
+            kwargs["decision"] = decision
+        if reply is not None:
+            kwargs["reply"] = reply
+        if intents is not None:
+            kwargs["intents"] = intents
+        if risk_flags is not None:
+            kwargs["risk_flags"] = risk_flags
+        if trace is not None:
+            kwargs["trace"] = trace
+        if usage is not None:
+            kwargs["usage"] = usage
+        super().__init__(**kwargs)
 
 
 class Session(BaseModel):
-    customer_id: str
+    """Multi-turn session state tracking customer context and active ticket."""
+
+    customer_id: str | None = None
     history: list[dict[str, Any]] = Field(default_factory=list)
     pending_intent: dict[str, Any] | None = None
     case_state: dict[str, Any] = Field(default_factory=dict)
+
+    def __init__(
+        self,
+        customer_id: str | None = None,
+        history: list[dict[str, Any]] | None = None,
+        pending_intent: dict[str, Any] | None = None,
+        case_state: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if customer_id is not None or "customer_id" in kwargs:
+            kwargs["customer_id"] = (
+                customer_id if customer_id is not None else kwargs.get("customer_id")
+            )
+        if history is not None:
+            kwargs["history"] = history
+        if pending_intent is not None or "pending_intent" in kwargs:
+            kwargs["pending_intent"] = (
+                pending_intent if pending_intent is not None else kwargs.get("pending_intent")
+            )
+        if case_state is not None:
+            kwargs["case_state"] = case_state
+        super().__init__(**kwargs)
+
+
+# JSON schema definition for terminal tool finalize(...)
+FINALIZE_SPEC: dict[str, Any] = {
+    "name": "finalize",
+    "description": (
+        "Terminal action finalizing the conversation turn with explicit decision, "
+        "intents, customer reply, internal reasoning, and risk flags."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "decision": {
+                "type": "string",
+                "enum": ["ANSWER", "ASK", "ACT", "ESCALATE"],
+                "description": "Terminal decision enum for the conversation turn.",
+            },
+            "intents": {
+                "type": "array",
+                "description": "List of customer intents tracked during this turn.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Intent classification type.",
+                        },
+                        "order_id": {
+                            "type": "string",
+                            "description": "Associated order ID if applicable, otherwise null.",
+                            "nullable": True,
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Resolution status: done | held | asked | escalated.",
+                        },
+                    },
+                    "required": ["type", "status"],
+                },
+            },
+            "reply": {
+                "type": "string",
+                "description": "Customer-facing reply message.",
+            },
+            "internal_reasoning": {
+                "type": "string",
+                "description": "Internal audit reasoning justifying the decision (<=25 words, no private data).",
+            },
+            "risk_flags": {
+                "type": "array",
+                "description": "List of detected risk or escalation flags.",
+                "items": {"type": "string"},
+            },
+        },
+        "required": [
+            "decision",
+            "intents",
+            "reply",
+            "internal_reasoning",
+            "risk_flags",
+        ],
+    },
+}
+
+__all__ = [
+    "FINALIZE_SPEC",
+    "AgentResult",
+    "Decision",
+    "Intent",
+    "Session",
+    "ToolCall",
+    "ToolResult",
+    "TraceStep",
+]

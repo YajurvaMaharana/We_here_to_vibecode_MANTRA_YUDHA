@@ -1,0 +1,72 @@
+[
+  {
+    "sku": "NM-ELEC-101",
+    "product_id": "NM-ELEC-101",
+    "name": "NovaMart Smart ANC Wireless Headphones",
+    "category": "electronics",
+    "price": 4999.00,
+    "warranty_months": 12,
+    "returnable": true,
+    "spec": "Bluetooth 5.3, Active Noise Cancelling, 40h Battery"
+  },
+  {
+    "sku": "NM-ELEC-102",
+    "product_id": "NM-ELEC-102",
+    "name": "NovaMart Pulse Fitness Smartwatch",
+    "category": "electronics",
+    "price": 2499.00,
+    "warranty_months": 12,
+    "returnable": true,
+    "spec": "AMOLED Display, SpO2 & Heart Rate Monitor, IP68"
+  },
+  {
+    "sku": "NM-ELEC-103",
+    "product_id": "NM-ELEC-103",
+    "name": "NovaMart Fast Charging Power Bank 20000mAh",
+    "category": "electronics",
+    "price": 1499.00,
+    "warranty_months": 6,
+    "returnable": true,
+    "spec": "65W USB-PD Fast Charging, Triple Output"
+  },
+  {
+    "sku": "NM-FASH-201",
+    "product_id": "NM-FASH-201",
+    "name": "NovaMart Classic Men Oxford Cotton Shirt",
+    "category": "fashion",
+    "price": 1299.00,
+    "warranty_months": 0,
+    "returnable": true,
+    "spec": "100% Breathable Organic Cotton, Slim Fit"
+  },
+  {
+    "sku": "NM-FASH-202",
+    "product_id": "NM-FASH-202",
+    "name": "NovaMart Women Floral Summer Dress",
+    "category": "fashion",
+    "price": 1899.00,
+    "warranty_months": 0,
+    "returnable": true,
+    "spec": "Rayon fabric, A-line cut, Knee length"
+  },
+  {
+    "sku": "NM-HOME-301",
+    "product_id": "NM-HOME-301",
+    "name": "NovaMart Espresso & Coffee Maker",
+    "category": "appliances",
+    "price": 6499.00,
+    "warranty_months": 24,
+    "returnable": true,
+    "spec": "15 Bar Italian Pump, Milk Frother Wand"
+  },
+  {
+    "sku": "NM-HYG-401",
+    "product_id": "NM-HYG-401",
+    "name": "NovaMart Sonic Electric Toothbrush Replacement Heads (Pack of 4)",
+    "category": "personal_care",
+    "price": 699.00,
+    "warranty_months": 0,
+    "returnable": false,
+    "spec": "Hygienic sealed packaging, Non-returnable once opened"
+  }
+]
