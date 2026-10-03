@@ -1,5 +1,6 @@
 """Agent orchestrator implementing run_turn: pre-filter -> preload -> LLM loop -> post-validate."""
 
+
 from __future__ import annotations
 
 import inspect
@@ -126,6 +127,7 @@ def _default_post_validate(
         tool_name = entry.get("tool")
         result = entry.get("result", {})
         if tool_name == "get_order" and isinstance(result, dict):
+            order_data = result.get("data") if isinstance(result.get("data"), dict) else result
             order_data = (
                 result.get("data")
                 if isinstance(result.get("data"), dict)
