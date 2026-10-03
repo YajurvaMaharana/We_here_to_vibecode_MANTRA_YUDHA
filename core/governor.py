@@ -21,6 +21,7 @@ from core.models import (
 from core.guardrails import SecurityGuardrails
 from core.verifier import ClaimVerifier
 from tools.registry import ToolRegistry
+from agent.guardrails import post_validate
 
 
 class SentinelGovernor:
@@ -42,10 +43,10 @@ class SentinelGovernor:
         if security_analysis["risk_flags"]:
             risk_flags.extend(security_analysis["risk_flags"])
 
-        clean_text = SecurityGuardrails.sanitize_customer_text(raw_customer_message)
+        clean_text = security_analysis.get("cleaned_message") if security_analysis["is_injection"] else SecurityGuardrails.sanitize_customer_text(raw_customer_message)
 
-        # Immediate Defense against Prompt Injection & Override Attempts
-        if security_analysis["is_injection"]:
+        # Immediate Defense against pure Prompt Injection attempts (no genuine request)
+        if security_analysis["is_injection"] and not clean_text.strip():
             steps_trace.append({
                 "step": "L1_SECURITY_DEFENSE",
                 "status": "ATTACK_INTERCEPTED",
@@ -282,6 +283,25 @@ class SentinelGovernor:
             "risk_flags": risk_flags,
             "execution_time_ms": execution_duration
         }
+
+        # Apply post_validate guardrail check & text redactions
+        session_info = {
+            "customer_id": customer_id,
+            "session_id": session_id,
+            "approval_threshold": policy_data.get("auto_approval_cap", 100.0) if policy_data else 100.0,
+            "order_verified": bool(order_obj),
+            "ownership_mismatch": bool(order_verification and not order_verification.get("authorized")),
+            "non_delivery_claim": any(w in raw_customer_message.lower() for w in ["never got", "not received", "didn't receive", "where is", "haven't received"]),
+            "order": order_obj or {}
+        }
+        validated_payload = post_validate(
+            {"decision": decision, "customer_response": customer_facing_text, "audit_trail": audit_trail},
+            tools_called_in_turn,
+            session_info
+        )
+        decision = validated_payload["decision"]
+        customer_facing_text = validated_payload["customer_response"]
+        audit_trail = validated_payload["audit_trail"]
 
         self.tools.finalize(decision, customer_facing_text, audit_trail)
         steps_trace.append({
