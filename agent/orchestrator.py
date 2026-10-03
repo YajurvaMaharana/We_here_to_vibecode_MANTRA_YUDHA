@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import re
-from typing import Optional
-
 from agent.schemas import AgentResult, Decision, Intent, Session, TraceStep
 
 

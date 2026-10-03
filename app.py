@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import streamlit as st
 from dotenv import load_dotenv
 
 from agent.orchestrator import run_turn
-from agent.schemas import AgentResult, Decision, Session, TraceStep
+from agent.schemas import AgentResult, Session
 
 # Load environment configuration
 load_dotenv()
@@ -133,7 +133,7 @@ st.markdown(
 # -----------------------------------------------------------------------------
 # Customer Data Provider
 # -----------------------------------------------------------------------------
-def get_sample_customers() -> List[Dict[str, str]]:
+def get_sample_customers() -> list[dict[str, str]]:
     """Loads 10 sample customers from DataStore if available, otherwise uses defaults."""
     try:
         from agent.data_store import DataStore
@@ -142,7 +142,7 @@ def get_sample_customers() -> List[Dict[str, str]]:
             customers = store.get_customers()
             if customers:
                 return customers[:10]
-    except Exception:
+    except Exception:  # noqa: BLE001, S110
         pass
 
     return [
@@ -199,7 +199,7 @@ with st.sidebar:
         st.session_state["messages"][selected_cid] = []
 
     current_session: Session = st.session_state["sessions"][selected_cid]
-    current_messages: List[Dict[str, Any]] = st.session_state["messages"][selected_cid]
+    current_messages: list[dict[str, Any]] = st.session_state["messages"][selected_cid]
 
     st.markdown("---")
 
@@ -229,7 +229,7 @@ with st.sidebar:
             store = DataStore()
             if hasattr(store, "reload") and callable(store.reload):
                 store.reload()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         st.success(f"Data reloaded from disk! (Reload #{st.session_state['data_reload_count']})")
 
@@ -256,7 +256,7 @@ scenarios = [
 scenario_cols = st.columns(4)
 scenario_cols_2 = st.columns(4)
 
-triggered_message: Optional[str] = None
+triggered_message: str | None = None
 
 for idx, (label, prompt_text) in enumerate(scenarios[:4]):
     if scenario_cols[idx].button(label, use_container_width=True, help=prompt_text):
