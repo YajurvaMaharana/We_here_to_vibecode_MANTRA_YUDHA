@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaMart Sentinel-Governor | Autonomous Support Engine</title>
+  <meta name="description" content="Sentinel-Governor: An autonomous, verification-first customer support engine for NovaMart, engineered for the Mantra Yudha Hackathon.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <span class="logo-icon">🛡️</span>
+        <div class="logo-text">
+          <span class="brand-title">NovaMart <span class="badge-governor">Sentinel-Governor</span></span>
+          <span class="brand-subtitle">Autonomous Verification-First Agent • Mantra Yudha 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Authority Hierarchy Ribbon -->
+    <div class="authority-ribbon">
+      <div class="hierarchy-pill l1 active" title="L1 System Prompt (Highest Authority)">
+        <span class="level-tag">L1</span>
+        <span class="level-desc">System Prompt</span>
+      </div>
+      <span class="hierarchy-sep">&gt;</span>
+      <div class="hierarchy-pill l2 active" title="L2 Active Policy (Business Rules)">
+        <span class="level-tag">L2</span>
+        <span class="level-desc">Active Policy</span>
+      </div>
+      <span class="hierarchy-sep">&gt;</span>
+      <div class="hierarchy-pill l3 active" title="L3 Database (Source of Truth)">
+        <span class="level-tag">L3</span>
+        <span class="level-desc">DB Ground Truth</span>
+      </div>
+      <span class="hierarchy-sep">&gt;</span>
+      <div class="hierarchy-pill l4 active" title="L4 Customer Message (Untrusted Data)">
+        <span class="level-tag">L4</span>
+        <span class="level-desc">Untrusted Input</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="system-status-indicator">
+        <span class="status-dot pulsing"></span>
+        <span class="status-label">Governor Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Scenario Quick Selector Bar -->
+  <nav class="scenario-bar" aria-label="Demo Scenarios">
+    <span class="scenario-label">Judge Demo Presets:</span>
+    <div class="scenario-buttons-scroll">
+      <button class="btn-scenario active" id="btn-scen-1" onclick="loadScenario('scen-1')">
+        <span class="scen-icon">⚡</span> 1. Return in Policy (ACT)
+      </button>
+      <button class="btn-scenario" id="btn-scen-2" onclick="loadScenario('scen-2')">
+        <span class="scen-icon">🚨</span> 2. OTP Delivery Scam (ESCALATE)
+      </button>
+      <button class="btn-scenario" id="btn-scen-3" onclick="loadScenario('scen-3')">
+        <span class="scen-icon">❓</span> 3. Missing Order ID (ASK)
+      </button>
+      <button class="btn-scenario" id="btn-scen-4" onclick="loadScenario('scen-4')">
+        <span class="scen-icon">🛡️</span> 4. Prompt Injection Attack (DEFEND)
+      </button>
+      <button class="btn-scenario" id="btn-scen-5" onclick="loadScenario('scen-5')">
+        <span class="scen-icon">⚠️</span> 5. TV &gt; $100 Cap (ESCALATE)
+      </button>
+      <button class="btn-scenario" id="btn-scen-6" onclick="loadScenario('scen-6')">
+        <span class="scen-icon">📦</span> 6. Order Tracking (ANSWER)
+      </button>
+      <button class="btn-scenario" id="btn-scen-7" onclick="loadScenario('scen-7')">
+        <span class="scen-icon">❌</span> 7. Expired Return Window (ANSWER)
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Dashboard Workspace -->
+  <main class="main-layout">
+    <!-- Left Column: Customer Support Chat Session -->
+    <section class="chat-column">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="panel-icon">💬</span>
+          <h2>Customer Interaction Portal</h2>
+        </div>
+        <div class="customer-profile-chip" id="customer-profile-chip">
+          <div class="profile-avatar" id="profile-avatar">SJ</div>
+          <div class="profile-info">
+            <span class="profile-name" id="profile-name">Sarah Jenkins</span>
+            <span class="profile-meta" id="profile-meta">ID: CUST-9812 • Trust Score: <strong class="trust-high">95%</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Order Snapshot Bar -->
+      <div class="order-context-banner" id="order-context-banner">
+        <div class="order-ctx-item">
+          <span class="ctx-k">Target Order:</span>
+          <span class="ctx-v" id="ctx-order-id">ORD-4491</span>
+        </div>
+        <div class="order-ctx-item">
+          <span class="ctx-k">Item:</span>
+          <span class="ctx-v" id="ctx-item-name">NovaPulse Pro Headphones ($79.99)</span>
+        </div>
+        <div class="order-ctx-item">
+          <span class="ctx-k">Status:</span>
+          <span class="ctx-v status-tag-delivered" id="ctx-status">Delivered</span>
+        </div>
+      </div>
+
+      <!-- Chat History Stream -->
+      <div class="chat-viewport" id="chat-viewport">
+        <!-- Messages rendered dynamically -->
+      </div>
+
+      <!-- Chat Input Controls -->
+      <div class="chat-composer">
+        <div class="composer-toolbar">
+          <label class="toggle-evidence" id="lbl-evidence">
+            <input type="checkbox" id="chk-photo-evidence" checked>
+            <span class="checkbox-custom"></span>
+            <span class="evidence-text">📸 Defect Photo Attached on File</span>
+          </label>
+          <button class="btn-ghost" id="btn-reset-chat" onclick="resetChat()" title="Reset Session">
+            🔄 Reset
+          </button>
+        </div>
+        <div class="composer-input-row">
+          <textarea id="txt-customer-message" rows="2" placeholder="Type a customer claim, question, or request..." aria-label="Customer message"></textarea>
+          <button class="btn-send" id="btn-send-message" onclick="sendMessage()">
+            <span>Send Turn</span>
+            <span class="send-arrow">➔</span>
+          </button>
+        </div>
+        <div class="composer-footer-note">
+          <span>Authority Notice: Input arrives inside <code>&lt;customer_message&gt;</code> (L4 untrusted). System prompt L1 cannot be overridden.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Sentinel-Governor Live Telemetry & Inspector -->
+    <section class="telemetry-column">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="panel-icon">🔬</span>
+          <h2>Governor Live Telemetry &amp; Compliance Inspector</h2>
+        </div>
+        <div class="execution-time-badge" id="execution-time-badge">
+          <span>⏱️ Execution: <strong id="val-exec-time">1.8 ms</strong></span>
+        </div>
+      </div>
+
+      <div class="telemetry-scrollable">
+        <!-- 1. Terminal Decision Showcase -->
+        <div class="decision-card" id="decision-card">
+          <div class="decision-badge-container">
+            <span class="decision-label">TERMINAL DECISION</span>
+            <div class="decision-badge badge-act" id="decision-badge">ACT</div>
+          </div>
+          <div class="decision-rationale-box">
+            <span class="rationale-header">Constitutional Justification:</span>
+            <p id="decision-rationale-text">
+              Verified order ORD-4491. Defect confirmed by attached photo. Within 14-day policy window. Amount $79.99 is within $100 auto-approval cap. Zero risk flags. Authorized to execute process_refund.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. The 8-Step Turn Workflow Pipeline -->
+        <div class="telemetry-section">
+          <div class="section-title-row">
+            <span class="sec-title">8-Step Workflow Pipeline</span>
+            <span class="sec-subtitle">Section 2 Execution Trace</span>
+          </div>
+          <div class="pipeline-stepper" id="pipeline-stepper">
+            <div class="step-node active" id="step-1"><span class="step-num">1</span><span class="step-name">Understand</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-2"><span class="step-num">2</span><span class="step-name">Context</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-3"><span class="step-num">3</span><span class="step-name">Verify</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-4"><span class="step-num">4</span><span class="step-name">Policy</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-5"><span class="step-num">5</span><span class="step-name">Decide</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-6"><span class="step-num">6</span><span class="step-name">Act</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-7"><span class="step-num">7</span><span class="step-name">Confirm</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node active" id="step-8"><span class="step-num">8</span><span class="step-name">Finalize</span></div>
+          </div>
+        </div>
+
+        <!-- 3. Truth vs Claim Matrix -->
+        <div class="telemetry-section">
+          <div class="section-title-row">
+            <span class="sec-title">Truth vs Claim Discrepancy Matrix</span>
+            <span class="sec-subtitle">L4 Customer Claim vs L3 Database Ground Truth</span>
+          </div>
+          <div class="matrix-table-wrap">
+            <table class="matrix-table" id="claims-matrix-table">
+              <thead>
+                <tr>
+                  <th>L4 Customer Claim</th>
+                  <th>L3 Database Ground Truth</th>
+                  <th>Verification Status</th>
+                </tr>
+              </thead>
+              <tbody id="claims-matrix-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Policy Rules & Risk Flags -->
+        <div class="telemetry-grid-two">
+          <div class="sub-panel">
+            <div class="sub-panel-header">
+              <span>📋 Active Policy (L2)</span>
+            </div>
+            <div class="sub-panel-body" id="policy-inspector-body">
+              <div class="metric-row"><span class="metric-k">Category:</span><span class="metric-v" id="pol-cat">Electronics</span></div>
+              <div class="metric-row"><span class="metric-k">Return Window:</span><span class="metric-v" id="pol-win">14 Days</span></div>
+              <div class="metric-row"><span class="metric-k">Photo Mandatory:</span><span class="metric-v" id="pol-photo">Yes (Defective)</span></div>
+              <div class="metric-row"><span class="metric-k">Auto-Approval Cap:</span><span class="metric-v" id="pol-cap">$100.00</span></div>
+            </div>
+          </div>
+
+          <div class="sub-panel">
+            <div class="sub-panel-header">
+              <span>🛡️ Risk &amp; Security Radar</span>
+            </div>
+            <div class="sub-panel-body" id="risk-radar-body">
+              <div class="radar-tag tag-clean" id="risk-tag-injection">Prompt Injection: NONE</div>
+              <div class="radar-tag tag-clean" id="risk-tag-otp">OTP Mismatch: NONE</div>
+              <div class="radar-tag tag-clean" id="risk-tag-cap">Threshold Cap: WITHIN LIMIT</div>
+              <div class="radar-tag tag-clean" id="risk-tag-acct">Account Match: VERIFIED</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Tool Execution Audit Log -->
+        <div class="telemetry-section">
+          <div class="section-title-row">
+            <span class="sec-title">Tools Executed in Turn</span>
+            <span class="sec-subtitle">L3 Source of Truth Operations</span>
+          </div>
+          <div class="tools-execution-list" id="tools-execution-list">
+            <!-- Tool cards rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 6. Raw Finalize Payload -->
+        <div class="telemetry-section">
+          <div class="section-title-row">
+            <span class="sec-title">Mandatory Audit Trail Payload</span>
+            <button class="btn-copy-json" onclick="copyAuditJson()">Copy JSON</button>
+          </div>
+          <pre class="json-code-block" id="audit-trail-json">{}</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
