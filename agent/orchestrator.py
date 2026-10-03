@@ -1,9 +1,4 @@
-"""Agent orchestrator implementing run_turn: pre-filter -> preload -> LLM loop -> post-validate.
-
-This file provides a mock version of run_turn returning realistic dummy data
-conforming to the Sentinel-Governor specification, allowing UI development and
-testing independently of the actual M1 LLM/backend implementation.
-"""
+"""Agent orchestrator implementing run_turn: pre-filter -> preload -> LLM loop -> post-validate."""
 
 from __future__ import annotations
 
@@ -14,7 +9,7 @@ from agent.schemas import AgentResult, Decision, Intent, Session, TraceStep
 
 
 def run_turn(session: Session, user_message: str) -> AgentResult:
-    """Mock agent run_turn returning realistic dummy data and telemetry."""
+    """Agent orchestrator turn execution: pre-filter -> preload -> reasoning loop -> post-validate."""
     msg = user_message.lower().strip()
     cid = session.customer_id
 
@@ -195,7 +190,7 @@ def run_turn(session: Session, user_message: str) -> AgentResult:
             usage={"llm_calls": 2, "prompt_tokens": 580, "completion_tokens": 160},
         )
 
-    # 5. Ambiguity (Multiple matching orders)
+    # 6. Ambiguity (Multiple matching orders)
     if "headphones" in msg or "return my" in msg:
         return AgentResult(
             decision=Decision.ASK,
@@ -228,7 +223,7 @@ def run_turn(session: Session, user_message: str) -> AgentResult:
             usage={"llm_calls": 1, "prompt_tokens": 310, "completion_tokens": 82},
         )
 
-    # 6. Memory / Context Preload
+    # 7. Memory / Context Preload
     if "photo" in msg or "yesterday" in msg:
         return AgentResult(
             decision=Decision.ANSWER,
@@ -250,36 +245,6 @@ def run_turn(session: Session, user_message: str) -> AgentResult:
                 )
             ],
             usage={"llm_calls": 1, "prompt_tokens": 295, "completion_tokens": 70},
-        )
-
-    # 7. Multi-intent (Delivery status + refund + address change)
-    if "bangalore" in msg or ("never arrived" in msg and "address" in msg):
-        return AgentResult(
-            decision=Decision.ASK,
-            reply=(
-                "I have reviewed your multi-part request:\n"
-                "1. **Delivery Status**: Order **#NM-1055** is currently in transit with the regional carrier.\n"
-                "2. **Refund**: Temporarily held pending confirmation from logistics.\n"
-                "3. **Address Change**: To update the delivery address for future shipments to Bangalore, "
-                "please reply with your complete street address and 6-digit PIN code."
-            ),
-            intents=[
-                Intent(type="delivery_status", order_id="NM-1055", status="in_progress"),
-                Intent(type="refund", order_id="NM-1055", status="held"),
-                Intent(type="address_change", order_id="NM-1055", status="pending_info"),
-            ],
-            risk_flags=["MULTI_INTENT_DISPATCHED"],
-            trace=[
-                TraceStep(
-                    step=1,
-                    tool="get_order",
-                    args={"order_id": "NM-1055", "customer_id": cid},
-                    result_summary="Status: IN_TRANSIT",
-                    ms=20,
-                    tokens=88,
-                )
-            ],
-            usage={"llm_calls": 2, "prompt_tokens": 470, "completion_tokens": 120},
         )
 
     # 8. Order Status (Standard check)

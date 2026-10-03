@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import os
-import time
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import streamlit as st
 from dotenv import load_dotenv
+
+from agent.orchestrator import run_turn
+from agent.schemas import AgentResult, Decision, Session, TraceStep
 
 # Load environment configuration
 load_dotenv()
@@ -128,12 +129,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# -----------------------------------------------------------------------------
-# Data Models and Agent Integration
-# -----------------------------------------------------------------------------
-from agent.schemas import AgentResult, Decision, Session, TraceStep
-from agent.orchestrator import run_turn
-
 
 # -----------------------------------------------------------------------------
 # Customer Data Provider
@@ -162,11 +157,6 @@ def get_sample_customers() -> List[Dict[str, str]]:
         {"customer_id": "CUST-009", "name": "Neha Joshi", "tier": "Gold"},
         {"customer_id": "CUST-010", "name": "Karthik Menon", "tier": "Platinum"},
     ]
-
-
-def execute_agent_turn(session: Session, user_message: str) -> AgentResult:
-    """Delegates to agent.orchestrator.run_turn with zero business logic in the UI."""
-    return run_turn(session, user_message)
 
 
 # -----------------------------------------------------------------------------
@@ -289,12 +279,13 @@ for turn in current_messages:
             
             with col_content:
                 # Decision badge
-                decision = turn.get("decision", "ANSWER")
-                badge_class = f"badge-{decision.lower()}"
+                raw_decision = turn.get("decision", "ANSWER")
+                decision_str = raw_decision.value if hasattr(raw_decision, "value") else str(raw_decision)
+                badge_class = f"badge-{decision_str.lower()}"
                 icons = {"ANSWER": "🔵", "ASK": "🟡", "ACT": "🟢", "ESCALATE": "🔴"}
-                icon = icons.get(decision, "🔵")
+                icon = icons.get(decision_str, "🔵")
 
-                badges_html = f'<span class="badge {badge_class}">{icon} {decision}</span>'
+                badges_html = f'<span class="badge {badge_class}">{icon} {decision_str}</span>'
 
                 # Risk-flag chips
                 risk_flags = turn.get("risk_flags", [])
@@ -354,9 +345,9 @@ if message_to_send:
     current_messages.append({"role": "user", "content": message_to_send})
     current_session.history.append({"role": "user", "content": message_to_send})
 
-    # 2. Execute agent turn
+    # 2. Execute agent turn directly via imported run_turn
     with st.spinner("Sentinel-Governor verifying claims against policy database..."):
-        result = execute_agent_turn(current_session, message_to_send)
+        result: AgentResult = run_turn(current_session, message_to_send)
 
     # 3. Append assistant turn
     current_messages.append(
