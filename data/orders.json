@@ -1,0 +1,218 @@
+[
+  {
+    "order_id": "NM-1042",
+    "id": "NM-1042",
+    "customer_id": "C101",
+    "order_date": "2026-09-28T10:15:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-09-30T14:30:00+05:30",
+    "order_value": 2499.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "UPI",
+    "otp_verified": true,
+    "otp_code": "849201",
+    "driver_name": "Ramesh Kumar",
+    "driver_phone": "+91-9811122233",
+    "route_id": "DEL-NORTH-44",
+    "shipping_address": "Flat 402, Green Valley Apartments, New Delhi",
+    "items": [
+      {
+        "item_id": "ITM-1042-1",
+        "sku": "NM-ELEC-102",
+        "name": "NovaMart Pulse Fitness Smartwatch",
+        "quantity": 1,
+        "price": 2499.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1101",
+    "id": "NM-1101",
+    "customer_id": "C102",
+    "order_date": "2026-10-01T09:00:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-10-02T11:20:00+05:30",
+    "order_value": 4999.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "Credit Card",
+    "otp_verified": true,
+    "otp_code": "339120",
+    "driver_name": "Suresh Yadav",
+    "driver_phone": "+91-9822233344",
+    "route_id": "MUM-WEST-12",
+    "shipping_address": "12 Lotus Colony, Bandra West, Mumbai",
+    "items": [
+      {
+        "item_id": "ITM-1101-1",
+        "sku": "NM-ELEC-101",
+        "name": "NovaMart Smart ANC Wireless Headphones",
+        "quantity": 1,
+        "price": 4999.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1102",
+    "id": "NM-1102",
+    "customer_id": "C102",
+    "order_date": "2026-10-02T14:00:00+05:30",
+    "status": "shipped",
+    "delivered_at": null,
+    "order_value": 1299.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "Net Banking",
+    "otp_verified": false,
+    "otp_code": "551234",
+    "driver_name": "Manoj Tiwari",
+    "driver_phone": "+91-9833344455",
+    "route_id": "MUM-WEST-14",
+    "shipping_address": "12 Lotus Colony, Bandra West, Mumbai",
+    "items": [
+      {
+        "item_id": "ITM-1102-1",
+        "sku": "NM-FASH-201",
+        "name": "NovaMart Classic Men Oxford Cotton Shirt",
+        "quantity": 1,
+        "price": 1299.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1205",
+    "id": "NM-1205",
+    "customer_id": "C103",
+    "order_date": "2026-09-20T16:45:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-09-23T18:10:00+05:30",
+    "order_value": 6499.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "Credit Card",
+    "otp_verified": true,
+    "otp_code": "992102",
+    "driver_name": "Amit Sharma",
+    "driver_phone": "+91-9844455566",
+    "route_id": "BLR-SOUTH-09",
+    "shipping_address": "77 Palm Avenue, Koramangala, Bengaluru",
+    "items": [
+      {
+        "item_id": "ITM-1205-1",
+        "sku": "NM-HOME-301",
+        "name": "NovaMart Espresso & Coffee Maker",
+        "quantity": 1,
+        "price": 6499.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1308",
+    "id": "NM-1308",
+    "customer_id": "C104",
+    "order_date": "2026-09-22T11:00:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-09-24T15:00:00+05:30",
+    "order_value": 1499.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "UPI",
+    "otp_verified": true,
+    "otp_code": "410928",
+    "driver_name": "Vijay Verma",
+    "driver_phone": "+91-9855566677",
+    "route_id": "HYD-CENTRAL-03",
+    "shipping_address": "Villa 14, Jubilee Hills, Hyderabad",
+    "items": [
+      {
+        "item_id": "ITM-1308-1",
+        "sku": "NM-ELEC-103",
+        "name": "NovaMart Fast Charging Power Bank 20000mAh",
+        "quantity": 1,
+        "price": 1499.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1410",
+    "id": "NM-1410",
+    "customer_id": "C105",
+    "order_date": "2026-10-02T19:30:00+05:30",
+    "status": "pending_payment",
+    "delivered_at": null,
+    "order_value": 2499.00,
+    "currency": "INR",
+    "payment_status": "pending",
+    "payment_method": "UPI",
+    "otp_verified": false,
+    "otp_code": null,
+    "driver_name": null,
+    "driver_phone": null,
+    "route_id": null,
+    "shipping_address": "House 55, Sector 14, Chandigarh",
+    "items": [
+      {
+        "item_id": "ITM-1410-1",
+        "sku": "NM-ELEC-102",
+        "name": "NovaMart Pulse Fitness Smartwatch",
+        "quantity": 1,
+        "price": 2499.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1512",
+    "id": "NM-1512",
+    "customer_id": "C106",
+    "order_date": "2026-08-10T12:00:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-08-12T16:00:00+05:30",
+    "order_value": 4999.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "Debit Card",
+    "otp_verified": true,
+    "otp_code": "194820",
+    "driver_name": "Deepak Sethi",
+    "driver_phone": "+91-9866677788",
+    "route_id": "PUN-EAST-07",
+    "shipping_address": "Flat 301, Marvel Residency, Pune",
+    "items": [
+      {
+        "item_id": "ITM-1512-1",
+        "sku": "NM-ELEC-101",
+        "name": "NovaMart Smart ANC Wireless Headphones",
+        "quantity": 1,
+        "price": 4999.00
+      }
+    ]
+  },
+  {
+    "order_id": "NM-1615",
+    "id": "NM-1615",
+    "customer_id": "C107",
+    "order_date": "2026-10-01T15:00:00+05:30",
+    "status": "delivered",
+    "delivered_at": "2026-10-02T18:00:00+05:30",
+    "order_value": 699.00,
+    "currency": "INR",
+    "payment_status": "completed",
+    "payment_method": "UPI",
+    "otp_verified": true,
+    "otp_code": "881290",
+    "driver_name": "Karan Johar",
+    "driver_phone": "+91-9877788899",
+    "route_id": "AHM-WEST-02",
+    "shipping_address": "8 Shanti Sadan, Vastrapur, Ahmedabad",
+    "items": [
+      {
+        "item_id": "ITM-1615-1",
+        "sku": "NM-HYG-401",
+        "name": "NovaMart Sonic Electric Toothbrush Replacement Heads",
+        "quantity": 1,
+        "price": 699.00
+      }
+    ]
+  }
+]

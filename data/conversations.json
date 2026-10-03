@@ -1,0 +1,34 @@
+[
+  {
+    "conversation_id": "CONV-101",
+    "id": "CONV-101",
+    "customer_id": "C101",
+    "created_at": "2026-09-29T09:55:00+05:30",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Where is my smartwatch order NM-1042?"
+      },
+      {
+        "role": "assistant",
+        "content": "Your order NM-1042 is out for delivery with our driver."
+      }
+    ]
+  },
+  {
+    "conversation_id": "CONV-102",
+    "id": "CONV-102",
+    "customer_id": "C103",
+    "created_at": "2026-10-01T16:15:00+05:30",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Can I use vinegar to descale my NM-HOME-301 coffee machine?"
+      },
+      {
+        "role": "assistant",
+        "content": "We recommend using citric acid based descaling solution as per user manual."
+      }
+    ]
+  }
+]
