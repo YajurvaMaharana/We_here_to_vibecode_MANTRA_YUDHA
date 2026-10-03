@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.system_generated/
+scratch/
+.DS_Store
+Thumbs.db
