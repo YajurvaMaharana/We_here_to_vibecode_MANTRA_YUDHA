@@ -123,12 +123,18 @@ SAFETY_SELF_HARM = [
     r"(?i)\bmar\s+jaunga\b",
     r"(?i)\bjaan\s+de\s+dunga\b",
     r"(?i)\batmahatya\b",
+    r"(?i)\bjeene\s+ka\s+(?:bhi\s+)?(?:mann\s+)?nahi\b",
+    r"(?i)\bkuch\s+(?:bhi\s+)?karne\s+ka\s+mann\s+nahi\b",
+    r"(?i)\bkhatam\s+kar\s+(?:lunga|dunga)\b",
 ]
 
 # Category B: Violence against people
 # Carefully crafted to avoid matching package condition like "the box was cut open"
 SAFETY_VIOLENCE = [
     r"(?i)\b(?:kill|shoot|murder|physically\s+attack|beat\s+up)\s+(?:you|your\s+staff|someone|people|the\s+driver)\b",
+    r"(?i)\b(?:find|hunt)\s+(?:him|them|the\s+driver)\s+and\s+make\s+(?:him|them)\s+pay\b",
+    r"(?i)\bmake\s+(?:him|them)\s+pay\s+personally\b",
+    r"(?i)\btake\s+matters\s+into\s+my\s+own\s+hands\b",
     r"(?i)\b(?:goli|jaan\s+se)\s+maar\s+dunga\b",
     r"(?i)\bbomb\s+(?:the|your)\s+(?:office|warehouse|building|store)\b",
 ]

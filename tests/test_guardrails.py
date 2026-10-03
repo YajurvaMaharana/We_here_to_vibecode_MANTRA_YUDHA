@@ -176,6 +176,18 @@ class TestGuardrailsPreFilter(unittest.TestCase):
         self.assertTrue(res.safety)
         self.assertTrue(res.force_escalate)
 
+    def test_25b_safety_handbook_self_harm_hinglish(self):
+        msg = "ORD-000003 ka refund nahi mila aur main bahut frustrated hoon. Kabhi kabhi lagta hai kuch bhi karne ka mann nahi, jeene ka bhi nahi."
+        res = pre_filter(msg)
+        self.assertTrue(res.safety)
+        self.assertTrue(res.force_escalate)
+
+    def test_25c_safety_handbook_violence_driver_threat(self):
+        msg = "The delivery guy for ORD-000004 stole my package. I will find him and make him pay personally."
+        res = pre_filter(msg)
+        self.assertTrue(res.safety)
+        self.assertTrue(res.force_escalate)
+
     # =========================================================================
     # 4. Abusive Language Tests
     # =========================================================================
